@@ -2,26 +2,25 @@ version: '3.8'
 
 services:
   db:
-    image: mysql:latest
+    build:
+      context: ./db            # Path to the directory containing the db Dockerfile
     restart: always
-    # environment:
-    #   MYSQL_ROOT_PASSWORD: "aODIJfe3"
-    #   MYSQL_DATABASE: financedata
-    #   MYSQL_PASSWORD: "aODIJfe3"
-    env_file: "./.env"
+    environment:
+      MYSQL_ROOT_PASSWORD: "aODIJfe3"
+      MYSQL_DATABASE: financedata
+      MYSQL_PASSWORD: "aODIJfe3"
     ports:
-      - "3307:3306"
+      - "3307:3307"
     volumes:
       - ./data:/var/lib/mysql
-      # - ./app/backup:/backup
 
   web:
-    build: ./app
+    build:
+      context: ./app           # Path to the directory containing the web Dockerfile
     restart: always
     depends_on:
       - db
-    # environment:
-    #   - DATABASE_URL=mysql+pymysql://root:aODIJfe3@db:3306/financedata
-    env_file: "./.env"
+    environment:
+      - DATABASE_URL=mysql+pymysql://root:aODIJfe3@db:3306/financedata
     ports:
       - "8080:8080"

@@ -1,11 +1,11 @@
 build:
   docker:
     web: ./app/Dockerfile
-  config:
-    MYSQL_ROOT_PASSWORD: "aODIJfe3"
-    MYSQL_DATABASE: "financedata"
-    MYSQL_PASSWORD: "aODIJfe3"
-    DATABASE_URL: "mysql+pymysql://root:aODIJfe3@db:3306/financedata"
+  # config:
+  #   MYSQL_ROOT_PASSWORD: "aODIJfe3"
+  #   MYSQL_DATABASE: "financedata"
+  #   MYSQL_PASSWORD: "aODIJfe3"
+  #   DATABASE_URL: "mysql+pymysql://root:aODIJfe3@db:3306/financedata"
 
 
 setup:
