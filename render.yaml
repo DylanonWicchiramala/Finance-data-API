@@ -22,6 +22,7 @@ services:
         value: financedata
       - key: MYSQL_PASSWORD
         value: aODIJfe3
+    mountPath:	/var/lib/mysql
     # ports:
     #   - containerPort: 3306
     # volumes:

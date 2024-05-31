@@ -8,7 +8,7 @@ import os
 URL_DATABASE = os.environ.get("DATABASE_URL")
 engine = create_engine(URL_DATABASE)
 
-engine = create_engine("mysql+pymysql://root:aODIJfe3@db:3306/financedata")
+# engine = create_engine("mysql+pymysql://root:aODIJfe3@db:3306/financedata")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
