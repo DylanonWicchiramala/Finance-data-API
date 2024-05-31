@@ -7,10 +7,10 @@ services:
     envVars:
       - key: DATABASE_URL
         value: mysql+pymysql://root:aODIJfe3@db:3306/financedata
-    ports:
-      - containerPort: 8080
+    # ports:
+    #   - containerPort: 8080
 
-  - type: web
+  - type: worker 
     name: db
     env: docker
     dockerfilePath: ./db/Dockerfile
@@ -22,8 +22,8 @@ services:
         value: financedata
       - key: MYSQL_PASSWORD
         value: aODIJfe3
-    ports:
-      - containerPort: 3306
+    # ports:
+    #   - containerPort: 3306
     volumes:
       - name: mysql-data
         path: /var/lib/mysql
