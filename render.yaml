@@ -1,0 +1,17 @@
+services:
+  - name: web
+    buildCommand: |
+      docker build -t web-service ./app
+    startCommand: |
+      docker run -d -p 8080:8080 --env-file ./app/.env web-service
+
+  - name: db
+    buildCommand: |
+      docker build -t mysql-db ./db
+    startCommand: |
+      docker run -d -p 3307:3306 \
+        -e MYSQL_ROOT_PASSWORD=aODIJfe3 \
+        -e MYSQL_DATABASE=financedata \
+        -e MYSQL_PASSWORD=aODIJfe3 \
+        -v $PWD/data:/var/lib/mysql \
+        mysql-db
