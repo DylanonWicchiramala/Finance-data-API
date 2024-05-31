@@ -1,17 +1,29 @@
 services:
-  - name: web
-    buildCommand: |
-      docker build -t web-service ./app
-    startCommand: |
-      docker run -d -p 8080:8080 --env-file ./app/.env web-service
+  - type: web
+    name: web
+    env: docker
+    dockerfilePath: ./app/Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        value: mysql+pymysql://root:aODIJfe3@db:3306/financedata
+    ports:
+      - containerPort: 8080
 
-  - name: db
-    buildCommand: |
-      docker build -t mysql-db ./db
-    startCommand: |
-      docker run -d -p 3307:3306 \
-        -e MYSQL_ROOT_PASSWORD=aODIJfe3 \
-        -e MYSQL_DATABASE=financedata \
-        -e MYSQL_PASSWORD=aODIJfe3 \
-        -v $PWD/data:/var/lib/mysql \
-        mysql-db
+  - type: privateService
+    name: db
+    env: docker
+    dockerfilePath: ./db/Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: MYSQL_ROOT_PASSWORD
+        value: aODIJfe3
+      - key: MYSQL_DATABASE
+        value: financedata
+      - key: MYSQL_PASSWORD
+        value: aODIJfe3
+    ports:
+      - containerPort: 3306
+    volumes:
+      - name: mysql-data
+        path: /var/lib/mysql
