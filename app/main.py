@@ -13,6 +13,8 @@ app = FastAPI(
     version= "0.01 beta"
 )
 
+prepare()
+
 # class PostBase(BaseModel):
 #     title: str
 #     content: str
