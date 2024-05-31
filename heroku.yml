@@ -9,3 +9,8 @@ setup:
 
 run:
   web: uvicorn main:app --host 0.0.0.0 --port $PORT
+  environment:
+    MYSQL_ROOT_PASSWORD: "aODIJfe3"
+    MYSQL_DATABASE: "financedata"
+    MYSQL_PASSWORD: "aODIJfe3"
+    DATABASE_URL: "mysql+pymysql://root:aODIJfe3@db:3306/financedata"
