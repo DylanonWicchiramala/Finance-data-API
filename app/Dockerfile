@@ -17,16 +17,11 @@ RUN apt-get update && apt-get install -y default-mysql-client
 COPY . .
 
 # Make port 5000 available to the world outside this container
-EXPOSE 5000
+EXPOSE 8080
 
 # Define environment variable
 ENV NAME World
-
-# Copy the SQL dump file into the container
-# COPY backup/financedata.sql /backup/financedata.sql
-
-# Execute the SQL file to initialize the database
-# CMD ["mysql", "-u", "root", "-p$MYSQL_ROOT_PASSWORD", "-P", "3306", "financedata", "<", "/backup/financedata.sql"]
+ENV DATABASE_URL=mysql+pymysql://root:aODIJfe3@db:3306/financedata
 
 # Run app.py when the container launches
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
