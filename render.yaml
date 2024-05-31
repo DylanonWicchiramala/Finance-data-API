@@ -10,7 +10,7 @@ services:
     ports:
       - containerPort: 8080
 
-  - type: privateService
+  - type: service
     name: db
     env: docker
     dockerfilePath: ./db/Dockerfile
