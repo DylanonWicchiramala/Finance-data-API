@@ -24,6 +24,6 @@ services:
         value: aODIJfe3
     # ports:
     #   - containerPort: 3306
-    volumes:
-      - name: mysql-data
-        path: /var/lib/mysql
+    # volumes:
+    #   - name: mysql-data
+    #     path: /var/lib/mysql
