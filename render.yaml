@@ -1,6 +1,5 @@
 services:
-  - type: web
-    name: web
+  - name: web
     env: docker
     dockerfilePath: ./app/Dockerfile
     autoDeploy: true
@@ -10,8 +9,7 @@ services:
     ports:
       - containerPort: 8080
 
-  - type: service
-    name: db
+  - name: db
     env: docker
     dockerfilePath: ./db/Dockerfile
     autoDeploy: true
