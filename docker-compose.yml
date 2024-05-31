@@ -4,10 +4,13 @@ services:
   db:
     image: mysql:latest
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: "aODIJfe3"
-      MYSQL_DATABASE: financedata
-      MYSQL_PASSWORD: "aODIJfe3"
+    # environment:
+    #   MYSQL_ROOT_PASSWORD: "aODIJfe3"
+    #   MYSQL_DATABASE: financedata
+    #   MYSQL_PASSWORD: "aODIJfe3"
+    env_file:
+      path: ./.env
+    required: true 
     ports:
       - "3307:3306"
     volumes:
@@ -19,7 +22,9 @@ services:
     restart: always
     depends_on:
       - db
-    environment:
-      - DATABASE_URL=mysql+pymysql://root:aODIJfe3@db:3306/financedata
+    # environment:
+    #   - DATABASE_URL=mysql+pymysql://root:aODIJfe3@db:3306/financedata
+    env_file:
+      path: ./.env
     ports:
       - "8080:8080"
