@@ -10,7 +10,7 @@ services:
 
   - type: pserv
     name: db
-    plan: standard
+    plan: free
     env: docker
     dockerfilePath: ./db/Dockerfile
     autoDeploy: false
