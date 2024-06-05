@@ -5,9 +5,9 @@ from Database import crud, database, query
 from sqlalchemy.orm import Session
 
 from prepare_database import prepare 
-# from pydantic import BaseModel
+from pydantic import BaseModel
 
-# session = database.SessionLocal()
+session = database.SessionLocal()
 app = FastAPI(
     title= "Finance API",
     version= "0.01 beta"
@@ -15,13 +15,13 @@ app = FastAPI(
 
 prepare()
 
-# class PostBase(BaseModel):
-#     title: str
-#     content: str
-#     user_id: int
+class PostBase(BaseModel):
+    title: str
+    content: str
+    user_id: int
     
-# class UserBase(BaseModel):
-    # username: str
+class UserBase(BaseModel):
+    username: str
 
     
 def get_db():
