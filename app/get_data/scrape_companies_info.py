@@ -8,7 +8,7 @@ from ratelimit import limits, sleep_and_retry
 # @sleep_and_retry
 @limits(calls=10, period=1.05)
 def __request_get(url, *args,**kwargs):
-    headers = {'User-agent': 'Mozilla/5.0'}
+    headers = {'User-agent': 'Mozilla/5.0', 'Accept-Encoding':'deflate'}
     return requests.get(url, headers = headers, *args, **kwargs)
 
 
