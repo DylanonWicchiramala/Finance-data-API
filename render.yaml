@@ -23,7 +23,7 @@ services:
     # ports:
     #   - containerPort: 3306
 
-  envVars:
+  - envVars:
     - key: DATABASE_URL
       value: mysql+pymysql://root:aODIJfe3@44.226.145.213:3306/financedata
     - key: MYSQL_ROOT_PASSWORD
