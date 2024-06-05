@@ -14,7 +14,7 @@ services:
     plan: standard
     env: docker
     dockerfilePath: ./db/Dockerfile
-    autoDeploy: true
+    autoDeploy: false
     disk:
       name: mysql
       mountPath: /var/lib/mysql
@@ -28,7 +28,7 @@ envVarGroups :
   - name: main-env
     envVars:
       - key: DATABASE_URL
-        value: mysql+pymysql://root:aODIJfe3@db-st4x:10000/financedata
+        value: mysql+pymysql://root:aODIJfe3@db-99xk:3306/financedata
       - key: MYSQL_ROOT_PASSWORD
         value: aODIJfe3
       - key: MYSQL_USER
