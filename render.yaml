@@ -14,7 +14,7 @@ services:
     plan: standard
     env: docker
     dockerfilePath: ./db/Dockerfile
-    autoDeploy: false
+    autoDeploy: true
     disk:
       name: mysql
       mountPath: /var/lib/mysql
