@@ -13,7 +13,7 @@ FROM mysql:8.0 AS upgrader
 # Expose the MySQL port
 EXPOSE 3306
 
-COPY db/config/user.cnf /etc/mysql/my.cnf
+# COPY db/config/user.cnf /etc/mysql/my.cnf
 # Mount a volume for persistent data storage
 VOLUME /var/lib/mysql
 
