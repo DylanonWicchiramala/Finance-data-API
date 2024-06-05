@@ -5,26 +5,30 @@ services:
     dockerfilePath: ./app/Dockerfile
     autoDeploy: true
     envVars:
-      - key: DATABASE_URL
-        value: mysql+pymysql://root:aODIJfe3@db:3306/financedata
     # ports:
     #   - containerPort: 8080
 
-  - type: worker 
+  - type: pserv
     name: db
+    plan: standard
     env: docker
     dockerfilePath: ./db/Dockerfile
-    autoDeploy: true
+    autoDeploy: false
+    disk:
+      name: mysql
+      mountPath: /var/lib/mysql
+      sizeGB: 5
     envVars:
-      - key: MYSQL_ROOT_PASSWORD
-        value: aODIJfe3
-      - key: MYSQL_DATABASE
-        value: financedata
-      - key: MYSQL_PASSWORD
-        value: aODIJfe3
-    mountPath:	/var/lib/mysql
+    - fromGroup: mysql
     # ports:
     #   - containerPort: 3306
-    # volumes:
-    #   - name: mysql-data
-    #     path: /var/lib/mysql
+
+envVarGroups:
+  - key: DATABASE_URL
+    value: mysql+pymysql://root:aODIJfe3@db:3306/financedata
+  - key: MYSQL_ROOT_PASSWORD
+    value: aODIJfe3
+  - key: MYSQL_DATABASE
+    value: financedata
+  - key: MYSQL_PASSWORD
+    value: aODIJfe3
