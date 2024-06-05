@@ -2,8 +2,7 @@ cryptography==42.0.7
 fastapi==0.111.0
 ratelimit==2.2.1
 pydantic==2.7.1
-PyMySQL==1.1.0
 requests==2.31.0
-fastapi-versioning
-SQLAlchemy==2.0.30
+fastapi-versioning==0.10.0
 uvicorn==0.29.0
+pyspark==3.5.1
