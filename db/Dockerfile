@@ -13,7 +13,7 @@ ENV MYSQL_PASSWORD=aODIJfe3
 # Expose the MySQL port
 EXPOSE 3306
 
-COPY config/user.cnf /etc/mysql/my.cnf
+COPY db/config/user.cnf /etc/mysql/my.cnf
 # Mount a volume for persistent data storage
 VOLUME /var/lib/mysql
 
