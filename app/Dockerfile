@@ -26,7 +26,7 @@ RUN pip install --no-cache-dir uvicorn==0.29.0
 RUN apt-get update && apt-get install -y default-mysql-client
 
 # Copy the current directory contents into the container at /app
-COPY . .
+COPY ./app .
 
 # Make port 5000 available to the world outside this container
 EXPOSE 8080
