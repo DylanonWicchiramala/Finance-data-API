@@ -28,7 +28,7 @@ envVarGroups :
   - name: main-env
     envVars:
       - key: DATABASE_URL
-        value: mysql+pymysql://root:aODIJfe3@db-99xk:3306/financedata
+        value: mysql+pymysql://mysql:aODIJfe3@db-99xk:3306/financedata
       - key: MYSQL_ROOT_PASSWORD
         value: aODIJfe3
       - key: MYSQL_USER
