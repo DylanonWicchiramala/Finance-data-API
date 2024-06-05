@@ -31,6 +31,8 @@ envVarGroups :
         value: mysql+pymysql://root:aODIJfe3@db-st4x:10000/financedata
       - key: MYSQL_ROOT_PASSWORD
         value: aODIJfe3
+      - key: MYSQL_USER
+        value: mysql
       - key: MYSQL_DATABASE
         value: financedata
       - key: MYSQL_PASSWORD
