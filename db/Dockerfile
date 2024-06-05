@@ -10,7 +10,6 @@ FROM mysql:latest
 
 # Copy necessary data from the upgrade stage (if applicable)
 COPY --from=upgrader /var/lib/mysql /var/lib/mysql
-a
 
 # Set the root password for MySQL (change 'aODIJfe3' to your desired password)
 ENV MYSQL_ROOT_PASSWORD=aODIJfe3
