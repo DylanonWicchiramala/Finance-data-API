@@ -32,11 +32,6 @@ def get_ciks() -> dict[int, dict[str, Any]]:
     """ download the cik data contain ticker , company name and cik number.
         save into a csv if local_path is not None.
     """
-    x = __request_get("https://www.sec.gov/files/company_tickers.json")
-    try:
-        x=x.json()
-    except:
-        print(x.content)
-    cik_data = x
+    cik_data = __request_get("https://www.sec.gov/files/company_tickers.json").json()
     
     return ciks_transform(cik_data)   
