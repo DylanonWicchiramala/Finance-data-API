@@ -3,7 +3,7 @@ services:
     name: web
     env: docker
     dockerfilePath: ./app/Dockerfile
-    autoDeploy: true
+    autoDeploy: false
     envVars:
     - fromGroup: main-env
     # ports:
