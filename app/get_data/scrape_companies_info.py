@@ -36,7 +36,7 @@ def get_ciks() -> dict[int, dict[str, Any]]:
     try:
         x=x.json()
     except:
-        print(x)
+        print(x.content)
     cik_data = x
     
     return ciks_transform(cik_data)   
