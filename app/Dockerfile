@@ -32,7 +32,7 @@ COPY . .
 EXPOSE 8080
 
 # Define environment variable
-# ENV NAME World
+ENV NAME World
 # ENV DATABASE_URL=mysql+pymysql://root:aODIJfe3@db:3306/financedata
 
 # Run app.py when the container launches
