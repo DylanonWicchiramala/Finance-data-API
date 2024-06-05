@@ -1,5 +1,5 @@
 # Use an official MySQL image from the Docker Hub
-FROM mysql:latest
+FROM mysql:8.0 AS upgrader
 
 # # Set the root password for MySQL (change 'aODIJfe3' to your desired password)
 # ENV MYSQL_ROOT_PASSWORD=aODIJfe3
