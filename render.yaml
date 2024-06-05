@@ -18,7 +18,7 @@ services:
     disk:
       name: mysql
       mountPath: /var/lib/mysql
-      sizeGB: 1
+      sizeGB: 5
     envVars:
     - fromGroup: main-env 
     # ports:
