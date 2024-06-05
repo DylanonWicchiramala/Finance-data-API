@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.responses import RedirectResponse
 from typing import Annotated
-from Database import crud, database, query
-from sqlalchemy.orm import Session
+# from Database import crud, database, query
+# from sqlalchemy.orm import Session
 
-from prepare_database import prepare 
+# from prepare_database import prepare 
 # from pydantic import BaseModel
 
 # session = database.SessionLocal()
@@ -13,7 +13,7 @@ app = FastAPI(
     version= "0.01 beta"
 )
 
-prepare()
+# prepare()
 
 # class PostBase(BaseModel):
 #     title: str
@@ -24,15 +24,15 @@ prepare()
     # username: str
 
     
-def get_db():
-    session = database.SessionLocal()
-    try:
-        yield session 
-    finally:
-        session.close()
+# def get_db():
+#     session = database.SessionLocal()
+#     try:
+#         yield session 
+#     finally:
+#         session.close()
         
         
-db_dependency = Annotated[Session, Depends(get_db)]
+# db_dependency = Annotated[Session, Depends(get_db)]
 
 
 @app.get("/")
@@ -41,19 +41,19 @@ def read_root():
 
 
 ## company_info
-@app.get("/company-info/", status_code=status.HTTP_200_OK)
-async def read_post(ticker: str=None, cik: str=None, session: db_dependency=None):
-    if ticker is not None:
-        ticker = ticker.upper()
-        post = crud.company_info_get(session=session, filter={'ticker':ticker}, get_first=True)
-    elif cik is not None:
-        cik = int(cik)
-        post = crud.company_info_get(session=session, filter={'cik':cik}, get_first=False)
-    else:
-        return None
-    if post is None:
-        raise HTTPException(status_code=404, detail="ticker or cik is not found.")
-    return post
+# @app.get("/company-info/", status_code=status.HTTP_200_OK)
+# async def read_post(ticker: str=None, cik: str=None, session: db_dependency=None):
+#     if ticker is not None:
+#         ticker = ticker.upper()
+#         post = crud.company_info_get(session=session, filter={'ticker':ticker}, get_first=True)
+#     elif cik is not None:
+#         cik = int(cik)
+#         post = crud.company_info_get(session=session, filter={'cik':cik}, get_first=False)
+#     else:
+#         return None
+#     if post is None:
+#         raise HTTPException(status_code=404, detail="ticker or cik is not found.")
+#     return post
 
 
 # @app.get("/company-info/convert-ticker/{ticker}", status_code=status.HTTP_200_OK)
