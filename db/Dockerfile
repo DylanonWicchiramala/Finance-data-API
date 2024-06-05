@@ -1,12 +1,4 @@
-# Stage 1: Perform upgrade (if necessary)
-FROM mysql:8.0 AS upgrader
-
-# Upgrade logic using the MySQL upgrade script (or your preferred method)
-RUN echo "Performing MySQL upgrade..."
-# (Copy and run the upgrade script here)
-
-# Stage 2: Final image (smaller)
-FROM mysql:latest
+FROM mysql/mysql-server:latest
 
 # Copy necessary data from the upgrade stage (if applicable)
 COPY --from=upgrader /var/lib/mysql /var/lib/mysql
