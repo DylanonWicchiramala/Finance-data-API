@@ -1,22 +1,13 @@
 version: '3.8'
 
 services:
-  db:
-    build:
-      context: ./db            # Path to the directory containing the db Dockerfile
-    restart: always
-    env_file: .env
-    ports:
-      - "3307:3307"
-    volumes:
-      - ./db/data:/var/lib/mysql
 
   app:
     build:
       context: ./app           # Path to the directory containing the web Dockerfile
     restart: always
-    depends_on:
-      - db
+    volumes:
+      - ./data:/var/lib/data
     env_file: .env
     ports:
       - "8080:8080"
