@@ -4,7 +4,7 @@ services:
 
   app:
     build:
-      context: .         # Path to the directory containing the web Dockerfile
+      context: ./         # Path to the directory containing the web Dockerfile
       dockerfile: ./app/Dockerfile
     restart: always
     volumes:
