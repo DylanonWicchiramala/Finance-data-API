@@ -1,7 +1,7 @@
 # Use the official Python image from the Docker Hub
 FROM python:3.10
 
-COPY ../data var/lib/data
+COPY ./data var/lib/data
 
 # # Set the working directory
 # WORKDIR /app
