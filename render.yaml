@@ -10,6 +10,7 @@ services:
       name: data
       mountPath: ./data:/var/lib/data
       sizeGB: 1
+    region: singapore
     envVars:
       - key: DATA_PATH
         value: /var/lib/data

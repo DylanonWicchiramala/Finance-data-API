@@ -1,13 +1,13 @@
 # Use the official Python image from the Docker Hub
 FROM python:3.10
 
-COPY ./data var/lib/data
+COPY ../data var/lib/data
 
 # Copy the application code from the build context to the container
-COPY app/ app/
+COPY . app/
 
 # Copy the requirements file to the working directory
-COPY app/requirements.txt .
+COPY requirements.txt .
 
 # # Install any Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
