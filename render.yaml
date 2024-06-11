@@ -1,8 +1,8 @@
 services:
   - type: web
-    name: web
+    name: finance-api
     env: docker
-    dockerContext: ./
+    dockerContext: .
     dockerfilePath: ./app/Dockerfile
     autoDeploy: false
     plan: starter
