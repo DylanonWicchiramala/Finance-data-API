@@ -1,36 +1,23 @@
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.responses import RedirectResponse
 from typing import Annotated
-from Database import crud, database, query
+from pipeline import crud, data
 from sqlalchemy.orm import Session
 
 from prepare_database import prepare 
-# from pydantic import BaseModel
 
-# session = database.SessionLocal()
 app = FastAPI(
     title= "Finance API",
     version= "0.01 beta"
 )
 
-prepare()
+# prepare()
 
-# class PostBase(BaseModel):
-#     title: str
-#     content: str
-#     user_id: int
-    
-# class UserBase(BaseModel):
-    # username: str
-
-    
 def get_db():
-    session = database.SessionLocal()
     try:
-        yield session 
+        yield data.connection 
     finally:
-        session.close()
-        
+        data.connection.close()
         
 db_dependency = Annotated[Session, Depends(get_db)]
 
@@ -42,13 +29,13 @@ def read_root():
 
 ## company_info
 @app.get("/company-info/", status_code=status.HTTP_200_OK)
-async def read_post(ticker: str=None, cik: str=None, session: db_dependency=None):
+async def read_post(ticker: str=None, cik: str=None, connection: db_dependency=None):
     if ticker is not None:
         ticker = ticker.upper()
-        post = crud.company_info_get(session=session, filter={'ticker':ticker}, get_first=True)
+        post = crud.company_info_get(connection=connection, filter={'ticker':ticker}, get_first=True)
     elif cik is not None:
         cik = int(cik)
-        post = crud.company_info_get(session=session, filter={'cik':cik}, get_first=False)
+        post = crud.company_info_get(connection=connection, filter={'cik':cik}, get_first=False)
     else:
         return None
     if post is None:
