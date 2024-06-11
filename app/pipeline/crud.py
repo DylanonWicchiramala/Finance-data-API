@@ -83,6 +83,10 @@ def company_info_get(connection, filter:dict, columns:list=None, get_first:bool=
     """
     res = __tablefilter(connection, "companyInfo", filter, columns)
     
-    if get_first: return dict(zip(columns, res.fetchone()))
+    if get_first: 
+        if res.fetchone() is not None:
+            return dict(zip(columns, res.fetchone()))
+        else:
+            return None
 
     else: return [ dict(zip(columns, r)) for r in res.fetchall() ]

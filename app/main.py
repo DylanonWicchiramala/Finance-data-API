@@ -2,9 +2,9 @@ from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.responses import RedirectResponse
 from typing import Annotated
 from pipeline import crud, data
-from sqlite3 import Connection
+from sqlite3 import Connection, connect
 
-from prepare_database import prepare 
+# from prepare_database import prepare 
 
 app = FastAPI(
     title= "Finance API",
@@ -14,10 +14,11 @@ app = FastAPI(
 # prepare()
 
 def get_db():
+    connection = connect(data.DATABASE_PATH, check_same_thread=False    )
     try:
-        yield data.connection 
+        yield connection 
     finally:
-        data.connection.close()
+        connection.close()
         
 db_dependency = Annotated[Connection, Depends(get_db)]
 
@@ -32,13 +33,13 @@ def read_root():
 async def read_post(ticker: str=None, cik: str=None, connection: db_dependency=None):
     if ticker is not None:
         ticker = ticker.upper()
-        post = crud.company_info_get(connection=connection, filter={'ticker':ticker}, get_first=True)
+        post = crud.company_info_get(connection=connection, filter={'ticker':ticker}, columns=['cik', 'ticker', 'name'], get_first=True)
     elif cik is not None:
         cik = int(cik)
-        post = crud.company_info_get(connection=connection, filter={'cik':cik}, get_first=False)
+        post = crud.company_info_get(connection=connection, filter={'cik':cik}, columns=['cik', 'ticker', 'name'    ], get_first=False)
     else:
         return None
-    if post is None:
+    if post is None or len(post) == 0:
         raise HTTPException(status_code=404, detail="ticker or cik is not found.")
     return post
 

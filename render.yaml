@@ -4,10 +4,10 @@ services:
     env: docker
     dockerfilePath: ./app/Dockerfile
     autoDeploy: false
-    # disk:
-    #   name: data
-    #   mountPath: /var/lib/data
-    #   sizeGB: 5
+    disk:
+      name: data
+      mountPath: /var/lib/data
+      sizeGB: 1
     envVars:
     - fromGroup: main-env
     # ports:
