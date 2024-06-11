@@ -29,6 +29,9 @@ RUN apt-get update && apt-get install -y default-mysql-client
 # Copy the current directory contents into the container at /app
 COPY . .
 
+# Copy the database to image.
+COPY ../data /var/lib/data
+
 # Make port 5000 available to the world outside this container
 EXPOSE 8080
 
