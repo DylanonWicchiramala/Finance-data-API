@@ -8,11 +8,10 @@ WORKDIR /app
 COPY . .
 
 # # Copy the requirements file to the working directory
-COPY requirements.txt .
+COPY app/requirements.txt .
 
 # # Install any Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
-
 
 # Make port 5000 available to the world outside this container
 EXPOSE 8080
