@@ -4,11 +4,11 @@ services:
 
   app:
     build:
-      context: ./app         # Path to the directory containing the web Dockerfile
-      dockerfile: ./app/Dockerfile
+      context: ./app
+      dockerfile: ./Dockerfile
     restart: always
     volumes:
-      - ./data:/var/lib/data
+      - ./app/data:/var/lib/data
     env_file: .env
     ports:
       - "8080:8080"

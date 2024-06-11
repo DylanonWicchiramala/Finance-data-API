@@ -4,7 +4,7 @@ FROM python:3.10
 # Set the working directory
 WORKDIR app
 
-COPY ./data var/lib/data
+COPY data var/lib/data
 
 # Copy the application code from the build context to the container
 COPY . .

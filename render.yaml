@@ -3,12 +3,12 @@ services:
     name: finance-api
     env: docker
     dockerContext: ./app
-    dockerfilePath: ./app/Dockerfile
+    dockerfilePath: ./Dockerfile
     autoDeploy: false
     plan: starter
     disk:
       name: data
-      mountPath: ./app/data:/var/lib/data
+      mountPath:  ./app/data:/var/lib/data
       sizeGB: 1
     region: singapore
     envVars:
