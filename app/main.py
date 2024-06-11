@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.responses import RedirectResponse
 from typing import Annotated
 from pipeline import crud, data
-from sqlite3 import Connection, connect
+from sqlite3 import Connection
 
 # from prepare_database import prepare 
 
@@ -14,11 +14,7 @@ app = FastAPI(
 # prepare()
 
 def get_db():
-    connection = connect(data.DATABASE_PATH, check_same_thread=False    )
-    try:
-        yield connection 
-    finally:
-        connection.close()
+    yield data.connection 
         
 db_dependency = Annotated[Connection, Depends(get_db)]
 
@@ -41,6 +37,7 @@ async def read_post(ticker: str=None, cik: str=None, connection: db_dependency=N
         return None
     if post is None or len(post) == 0:
         raise HTTPException(status_code=404, detail="ticker or cik is not found.")
+    data.connection.close()
     return post
 
 

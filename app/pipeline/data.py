@@ -1,5 +1,5 @@
 import os
-# import sqlite3
+import sqlite3
 
 PATH = os.environ.get("DATA_PATH")
 
@@ -7,4 +7,4 @@ PATH = os.environ.get("DATA_PATH")
 
 DATABASE_PATH = os.path.join(PATH, 'financedata.db')
 
-# connection = sqlite3.connect(DATABASE_PATH)
+connection = sqlite3.connect(DATABASE_PATH, check_same_thread=False)
