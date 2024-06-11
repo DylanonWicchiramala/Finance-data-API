@@ -4,7 +4,7 @@ services:
     env: docker
     dockerfilePath: ./app/Dockerfile
     autoDeploy: false
-    plan:free
+    plan: free
     disk:
       name: data
       mountPath: /var/lib/data
