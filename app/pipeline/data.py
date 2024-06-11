@@ -5,6 +5,6 @@ PATH = os.environ.get("DATA_PATH")
 
 # PATH = './data'
 
-DATABASE_PATH = os.path.join(PATH, 'financedata.db')
+DATABASE_PATH = os.path.join(os.path.abspath(PATH), 'financedata.db')
 
 connection = sqlite3.connect(DATABASE_PATH, check_same_thread=False)
