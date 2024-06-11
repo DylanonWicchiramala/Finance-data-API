@@ -9,12 +9,7 @@ services:
       mountPath: /var/lib/data
       sizeGB: 1
     envVars:
-    - fromGroup: main-env
-    # ports:
-    #   - containerPort: 8080
-
-envVarGroups :
-  - name: main-env
-    envVars:
       - key: DATA_PATH
         value: /var/lib/data
+    # ports:
+    #   - containerPort: 8080
