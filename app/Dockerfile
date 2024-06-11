@@ -1,24 +1,22 @@
 # Use the official Python image from the Docker Hub
 FROM python:3.10
 
-WORKDIR .
+# Set the working directory
+WORKDIR app
 
 COPY ./data var/lib/data
 
 # Copy the application code from the build context to the container
-COPY app/ app/
+COPY . .
 
 # Copy the requirements file to the working directory
-COPY app/requirements.txt .
+COPY requirements.txt .
 
 # # Install any Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Make port 5000 available to the world outside this container
 EXPOSE 8080
-
-# Set the working directory
-WORKDIR app
 
 # Define environment variable
 ENV NAME World
