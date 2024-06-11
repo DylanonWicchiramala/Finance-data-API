@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.responses import RedirectResponse
 from typing import Annotated
 from pipeline import crud, data
-from sqlalchemy.orm import Session
+from sqlite3 import Connection
 
 from prepare_database import prepare 
 
@@ -19,7 +19,7 @@ def get_db():
     finally:
         data.connection.close()
         
-db_dependency = Annotated[Session, Depends(get_db)]
+db_dependency = Annotated[Connection, Depends(get_db)]
 
 
 @app.get("/")

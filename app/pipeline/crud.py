@@ -4,7 +4,6 @@ sys.path.append('./pipeline')
 # sys.path.append('./app')
 
 import schema
-import sqlite3
 from get_data import scrape_companies_info
 
 
