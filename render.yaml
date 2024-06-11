@@ -2,6 +2,7 @@ services:
   - type: web
     name: web
     env: docker
+    dockerContext: .
     dockerfilePath: ./app/Dockerfile
     autoDeploy: false
     plan: starter

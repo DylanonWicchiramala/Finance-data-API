@@ -37,7 +37,7 @@ async def read_post(ticker: str=None, cik: str=None, connection: db_dependency=N
         return None
     if post is None or len(post) == 0:
         raise HTTPException(status_code=404, detail="ticker or cik is not found.")
-    data.connection.close()
+    # data.connection.close()
     return post
 
 

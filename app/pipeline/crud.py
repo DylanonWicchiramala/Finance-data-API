@@ -82,12 +82,12 @@ def company_info_get(connection, filter:dict, columns:list=None, get_first:bool=
     :return: Dictionary containing company info (return list if have many result) if found, otherwise None
     """
     res = __tablefilter(connection, "companyInfo", filter, columns)
+    res = res.fetchone() if get_first else res.fetchall()
     
-    print(res.fetchone())
     if get_first: 
-        if res.fetchone() is not None:
-            return dict(zip(columns, res.fetchone()))
+        if res is not None:
+            return dict(zip(columns, res))
         else:
             return None
 
-    else: return [ dict(zip(columns, r)) for r in res.fetchall() ]
+    else: return [ dict(zip(columns, r)) for r in res ]
