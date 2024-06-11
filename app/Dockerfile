@@ -1,13 +1,13 @@
 # Use the official Python image from the Docker Hub
 FROM python:3.10
 
-# Set the working directory
-WORKDIR /app
+# # Set the working directory
+# WORKDIR /app
 
 # Copy the application code from the build context to the container
 COPY . .
 
-# # Copy the requirements file to the working directory
+# Copy the requirements file to the working directory
 COPY requirements.txt .
 
 # # Install any Python dependencies

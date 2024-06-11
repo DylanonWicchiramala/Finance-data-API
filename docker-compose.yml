@@ -4,7 +4,8 @@ services:
 
   app:
     build:
-      context: ./app           # Path to the directory containing the web Dockerfile
+      context: ./app         # Path to the directory containing the web Dockerfile
+      dockerfile: ./Dockerfile
     restart: always
     volumes:
       - ./data:/var/lib/data
