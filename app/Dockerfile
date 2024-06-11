@@ -1,16 +1,10 @@
 # Use the official Python image from the Docker Hub
 FROM python:3.10
 
-# Ensure the /var/lib/data directory exists
-RUN mkdir -p /var/lib/data
-
-# Copy the database to image.
-COPY ./data /var/lib/data
-
 # Set the working directory
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
+# Copy the application code from the build context to the container
 COPY . .
 
 # # Copy the requirements file to the working directory

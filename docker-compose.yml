@@ -6,8 +6,8 @@ services:
     build:
       context: ./app           # Path to the directory containing the web Dockerfile
     restart: always
-    # volumes:
-    #   - ./data:/var/lib/data
+    volumes:
+      - ./data:/var/lib/data
     env_file: .env
     ports:
       - "8080:8080"

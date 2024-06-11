@@ -7,7 +7,7 @@ services:
     plan: starter
     disk:
       name: data
-      mountPath: /var/lib/data
+      mountPath: ./data:/var/lib/data
       sizeGB: 1
     envVars:
       - key: DATA_PATH
