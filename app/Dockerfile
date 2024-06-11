@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # # Copy the requirements file to the working directory
-COPY app/requirements.txt .
+COPY requirements.txt .
 
 # # Install any Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
