@@ -64,6 +64,12 @@ async def super_secret_easter_egg():
     return RedirectResponse("https://youtu.be/dQw4w9WgXcQ?si=NOCkG90opbxpYCyZ")
 
 
+@app.get("/ping/", tags=["healthcheck"], summary="Perform a Health Check", 
+         response_description="Return HTTP Status Code 200 (OK)", status_code=status.HTTP_200_OK)
+async def ping():
+    return "OK"
+
+
 
 # @app.post("/posts/", status_code=status.HTTP_201_CREATED)
 # async def create_post(post: PostBase, session: db_dependency):
