@@ -1,7 +1,9 @@
 import os
 import sqlite3
 
-PATH = os.environ.get("DATA_PATH")
+# PATH = os.environ.get("DATA_PATH")
+
+PATH = "var/lib/data"
 
 # PATH = './data'
 
