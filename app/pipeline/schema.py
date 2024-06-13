@@ -7,16 +7,24 @@ companyInfo = """companyInfo(
   industry STRING
 )"""
 
-# Table submissionForm{
-#   accession_number INT(15) [pk]
-#   cik INT(10)
-#   ticker STRING(10)
-#   report_quarter STRING(6) 
-#   report_date date
-#   filing_date date
-#   form_type STRING(5) 
-#   raw_doc_id INT(15)
-# }
+submissionForm = """submissionForm{
+  accession_number INT(15) PRIMARY KEY NOT NULL,
+  cik INT(10),
+  filing_date DATE,
+  report_date DATE,
+  acceptance_date_time DATETIME,
+  act STRING,
+  form STRING,
+  file_number STRING,
+  film_number STRING,
+  items INT,
+  size INT,
+  is_xbrl INT,
+  is_inline_xbrl INT,
+  primary_docment STRING,
+  primary_doc_description STRING,
+  raw_doc_id INT(15),
+}"""
 
 # enum numberScale {
 #   million

@@ -50,7 +50,6 @@ def __tablefilter(connection, table_name:str, filter:dict, columns:list=None, c=
 
 def company_info_load(connection, force=False):
   ciks = scrape_companies_info.get_ciks()
-  ciks = list(ciks.values())
 
   keys = list(ciks[0].keys())
   values = [ list(d.values()) for d in ciks]
