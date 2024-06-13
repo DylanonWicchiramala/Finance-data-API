@@ -7,7 +7,7 @@ companyInfo = """companyInfo(
   industry STRING
 )"""
 
-submissionForm = """submissionForm{
+submissionForm = """submissionForm(
   accession_number INT(15) PRIMARY KEY NOT NULL,
   cik INT(10),
   filing_date DATE,
@@ -22,9 +22,8 @@ submissionForm = """submissionForm{
   is_xbrl INT,
   is_inline_xbrl INT,
   primary_docment STRING,
-  primary_doc_description STRING,
-  raw_doc_id INT(15),
-}"""
+  primary_doc_description STRING
+)"""
 
 # enum numberScale {
 #   million

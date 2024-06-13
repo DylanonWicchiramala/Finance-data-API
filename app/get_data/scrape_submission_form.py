@@ -4,7 +4,29 @@ import pandas as pd
 import json
 from util import request_get, convert_to_list_dict
 
-def get_submissions_info(
+def submissions_form_transform(submissions_form:list[dict[str: Any]]) -> list[dict[str: Any]]:
+    for i in range(len(submissions_form)):
+        submissions_form[i] = {
+            'accession_number': submissions_form[i]['accessionNumber'],
+            'cik': submissions_form[i]['cik'],
+            'filing_date': submissions_form[i]['filingDate'],
+            'report_date': submissions_form[i]['reportDate'],
+            'acceptance_date_time': submissions_form[i]['acceptanceDateTime'],
+            'act': submissions_form[i]['act'],
+            'form': submissions_form[i]['form'],
+            'file_number': submissions_form[i]['fileNumber'],
+            'film_number': submissions_form[i]['filmNumber'],
+            'items': submissions_form[i]['items'],
+            'size': submissions_form[i]['size'],
+            'is_xbrl': submissions_form[i]['isXBRL'],
+            'is_inline_xbrl': submissions_form[i]['isInlineXBRL'],
+            'primary_docment': submissions_form[i]['primaryDocument'],
+            'primary_doc_description': submissions_form[i]['primaryDocDescription']
+        }
+    return submissions_form    
+
+
+def get_submissions_form(
         cik:str|int, 
         get_older_files:bool|int=False, 
         save_path:str=None) -> dict[str, list]:
@@ -68,6 +90,7 @@ def get_submissions_info(
         with open(save_path, 'w') as json_file:
             json.dump(submissions, json_file, indent=4)
     
-    # submissions = convert_to_list_dict(submissions)
+    submissions = convert_to_list_dict(submissions)
+    submissions = submissions_form_transform(submissions)
     
     return submissions

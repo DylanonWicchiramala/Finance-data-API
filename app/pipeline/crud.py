@@ -4,7 +4,7 @@ sys.path.append('./pipeline')
 # sys.path.append('./app')
 
 import schema
-from get_data import scrape_companies_info
+from get_data import scrape_companies_info, get_submissions_form
 
 
 def __tablefilter(connection, table_name:str, filter:dict, columns:list=None, c="AND"):
@@ -90,3 +90,24 @@ def company_info_get(connection, filter:dict, columns:list=None, get_first:bool=
             return None
 
     else: return [ dict(zip(columns, r)) for r in res ]
+    
+    
+def submissions_form_load(connection, cik:int|str, force=False):
+    submissions_form = get_submissions_form(cik)
+
+    keys = list(submissions_form[0].keys())
+    values = [ list(d.values()) for d in submissions_form]
+
+    cursor = connection.cursor()
+
+    if force: cursor.execute("DROP TABLE IF EXISTS submissionForm")
+    cursor.execute("CREATE TABLE IF NOT EXISTS " + schema.submissionForm)
+    cursor.executemany(
+        f"""
+        INSERT OR REPLACE INTO submissionForm ({",".join(keys)})
+        VALUES ({",".join("?"*len(keys))})
+        """, 
+        values
+        )
+
+    connection.commit()

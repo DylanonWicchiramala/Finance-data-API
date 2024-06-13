@@ -2,7 +2,7 @@ from typing import Any
 import json
 from util import request_get
 
-def ciks_transform(dictionary):
+def ciks_transform(dictionary:list[dict[str: Any]]) -> list[dict[str: Any]]:
     for i in dictionary:
         cik = int(dictionary[i]['cik_str'])
         cik_str = str(cik).zfill(10)
