@@ -1,6 +1,11 @@
+import sys
+sys.path.append('./get_data')
+
 from typing import Any
 import json
 from util import request_get
+import logging
+logger = logging.getLogger(__name__)
 
 def ciks_transform(dictionary:list[dict[str: Any]]) -> list[dict[str: Any]]:
     for i in dictionary:
@@ -22,6 +27,7 @@ def get_ciks() -> list[dict[str, Any]]:
     """ download the cik data contain ticker , company name and cik number.
         save into a csv if local_path is not None.
     """
+    logger.info("Getting cik data")
 
     cik_data = request_get("https://www.sec.gov/files/company_tickers.json").json()
     

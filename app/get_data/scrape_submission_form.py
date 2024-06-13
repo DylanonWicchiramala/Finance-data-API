@@ -3,6 +3,8 @@ import json
 import pandas as pd
 import json
 from util import request_get, convert_to_list_dict
+import logging
+logger = logging.getLogger(__name__)
 
 def submissions_form_transform(submissions_form:list[dict[str: Any]]) -> list[dict[str: Any]]:
     for i in range(len(submissions_form)):
@@ -25,11 +27,10 @@ def submissions_form_transform(submissions_form:list[dict[str: Any]]) -> list[di
         }
     return submissions_form    
 
-
 def get_submissions_form(
         cik:str|int, 
         get_older_files:bool|int=False, 
-        save_path:str=None) -> dict[str, list]:
+        save_path:str=None) -> list[dict[str: Any]]:
     """ get document summissions for the ticker from https://data.sec.gov/submissions
     parameters:
         cik: str
@@ -58,6 +59,8 @@ def get_submissions_form(
         return meta
     
     base_url = "https://data.sec.gov/submissions/"
+    
+    logger.info("Getting submission info of CIK{}".format(cik))
     
     filings = __get_submission_meta(cik=cik)['filings']
     submissions = {}
@@ -89,6 +92,7 @@ def get_submissions_form(
     if save_path is not None:
         with open(save_path, 'w') as json_file:
             json.dump(submissions, json_file, indent=4)
+            logger.info("Submissions info of CIK{} saved at {}".format(cik, save_path))
     
     submissions = convert_to_list_dict(submissions)
     submissions = submissions_form_transform(submissions)

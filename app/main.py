@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.responses import RedirectResponse
 from typing import Annotated
-from pipeline import crud, data
+from database import crud, data
 from sqlite3 import Connection
 
 # from prepare_database import prepare 

@@ -1,11 +1,17 @@
-# from Database import crud, database, query
-# from sqlalchemy.orm import Session
+from database import crud, data
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
-# def prepare():
-#     session = database.SessionLocal()
+exceptions = []
 
-#     crud.create_tables(force_recreate=False)
+try:
+    
+    crud.company_info_load(data.connection)
+    crud.submissions_form_load_all(data.connection)
+    
+except Exception as e:
+    exceptions.append(e)
+    
+print(exceptions)
 
-#     crud.company_info_update(session, force=False)
-
-#     session.close()

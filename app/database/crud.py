@@ -1,11 +1,13 @@
 import sys
 sys.path.append('.')
-sys.path.append('./pipeline')
+sys.path.append('./database')
 # sys.path.append('./app')
 
+from tqdm import tqdm
 import schema
-from get_data import scrape_companies_info, get_submissions_form
-
+from get_data import scrape_companies_info, scrape_submission_form
+import logging
+logger = logging.getLogger(__name__)
 
 def __tablefilter(connection, table_name:str, filter:dict, columns:list=None, c="AND"):
     """
@@ -49,24 +51,25 @@ def __tablefilter(connection, table_name:str, filter:dict, columns:list=None, c=
 
 
 def company_info_load(connection, force=False):
-  ciks = scrape_companies_info.get_ciks()
+    ciks = scrape_companies_info.get_ciks()
 
-  keys = list(ciks[0].keys())
-  values = [ list(d.values()) for d in ciks]
-  
-  cursor = connection.cursor()
+    keys = list(ciks[0].keys())
+    values = [ list(d.values()) for d in ciks]
 
-  if force: cursor.execute("DROP TABLE IF EXISTS companyInfo")
-  cursor.execute("CREATE TABLE IF NOT EXISTS " + schema.companyInfo)
-  cursor.executemany(
-      f"""
-      INSERT OR REPLACE INTO companyInfo ({",".join(keys)})
-      VALUES ({",".join("?"*len(keys))})
-      """, 
-      values
-      )
+    cursor = connection.cursor()
 
-  connection.commit()
+    if force: cursor.execute("DROP TABLE IF EXISTS companyInfo")
+    cursor.execute("CREATE TABLE IF NOT EXISTS " + schema.companyInfo)
+    cursor.executemany(
+        f"""
+        INSERT OR REPLACE INTO companyInfo ({",".join(keys)})
+        VALUES ({",".join("?"*len(keys))})
+        """, 
+        values
+        )
+
+    logger.info("companyInfo database loaded")
+    connection.commit()
     
 
 def company_info_get(connection, filter:dict, columns:list=None, get_first:bool=True):
@@ -93,7 +96,12 @@ def company_info_get(connection, filter:dict, columns:list=None, get_first:bool=
     
     
 def submissions_form_load(connection, cik:int|str, force=False):
-    submissions_form = get_submissions_form(cik)
+    submissions_form = scrape_submission_form.get_submissions_form(cik)
+    
+    # if not have submission form.
+    if len(submissions_form)==0:
+        logger.info("No submissions from of CIK{}".format(cik))
+        return
 
     keys = list(submissions_form[0].keys())
     values = [ list(d.values()) for d in submissions_form]
@@ -110,4 +118,18 @@ def submissions_form_load(connection, cik:int|str, force=False):
         values
         )
 
+    logger.info("Submissions from of CIK{} was loaded into a database.".format(cik))
     connection.commit()
+    
+    
+# TODO: continue getting submissions form
+def submissions_form_load_all(connection, force=False):
+    cursor = connection.cursor()
+    ciks = cursor.execute("""
+    SELECT cik FROM companyInfo
+    """).fetchall()
+    ciks = [cik[0] for cik in ciks]
+    ciks = set(ciks)
+    
+    for cik in tqdm(ciks, desc="getting submission form."):
+        submissions_form_load(connection=connection, cik=cik, force=force)

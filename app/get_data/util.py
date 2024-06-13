@@ -1,11 +1,14 @@
 from typing import Any
 import requests
 from ratelimit import limits, sleep_and_retry
+import logging
+logger = logging.getLogger(__name__)
 
 @sleep_and_retry
 @limits(calls=10, period=1.05)
 def request_get(url, *args,**kwargs):
     headers = {'User-agent': 'Mozilla/5.0'}
+    logger.debug("Getting data from outer URL: {}".format(url))
     return requests.get(url, headers = headers, *args, **kwargs)
 
 
