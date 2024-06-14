@@ -111,8 +111,10 @@ def submissions_form_load(connection, cik:int|str, max_days_old:int=0, commit_da
 
         cursor = connection.cursor()
         
+        # create relevant table.
         cursor.execute("CREATE TABLE IF NOT EXISTS " + schema.latestFormUpdate)
         cursor.execute("CREATE TABLE IF NOT EXISTS " + schema.submissionForm)
+        # insert submission form information.
         cursor.executemany(
             f"""
             INSERT OR REPLACE INTO submissionForm ({",".join(keys)})
@@ -120,6 +122,7 @@ def submissions_form_load(connection, cik:int|str, max_days_old:int=0, commit_da
             """, 
             values
             )
+        # record submit form update date.
         cursor.execute(f"""
             INSERT OR REPLACE INTO latestFormUpdate (cik, timestamp)
             VALUES ({cik},{datetime.today().timestamp()})
@@ -146,11 +149,16 @@ def submissions_form_load(connection, cik:int|str, max_days_old:int=0, commit_da
     
 def submissions_form_load_all(connection, max_days_old:int=0):
     cursor = connection.cursor()
+    # getting cik from company info
     ciks = cursor.execute("""
     SELECT cik FROM companyInfo
     """).fetchall()
     ciks = [cik[0] for cik in ciks]
     ciks = set(ciks)
+    
+    if len(ciks)==0:
+        logger.warning("Submissions form not load any, due to no data in companyInfo")
+        return 
     
     for cik in tqdm(ciks, desc="getting submission form."):
         submissions_form_load(connection=connection, cik=cik, max_days_old=max_days_old, commit_database=False)
