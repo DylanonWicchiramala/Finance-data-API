@@ -96,7 +96,7 @@ def company_info_get(connection, filter:dict, columns:list=None, get_first:bool=
     else: return [ dict(zip(columns, r)) for r in res ]
     
 
-def submissions_form_load(connection, cik:int|str, max_days_old:int=0, commit_database:bool=True):
+def submissions_form_load(connection, cik:int|str, max_days_old:int=0, do_commit:bool=True):
     # data will not update when the number of the days since data was update less than max_day_old.
     def perform_load(connection, cik:int|str):
         submissions_form = scrape_submission_form.get_submissions_form(cik)
@@ -111,9 +111,6 @@ def submissions_form_load(connection, cik:int|str, max_days_old:int=0, commit_da
 
         cursor = connection.cursor()
         
-        # create relevant table.
-        cursor.execute("CREATE TABLE IF NOT EXISTS " + schema.latestFormUpdate)
-        cursor.execute("CREATE TABLE IF NOT EXISTS " + schema.submissionForm)
         # insert submission form information.
         cursor.executemany(
             f"""
@@ -129,19 +126,25 @@ def submissions_form_load(connection, cik:int|str, max_days_old:int=0, commit_da
             """)
 
         logger.info("Submissions from of CIK{} was loaded into a database.".format(cik))
-        if commit_database: connection.commit()
+        if do_commit: connection.commit()
     
-    if max_days_old != 0:
-        cursor = connection.cursor()
-        
-        latest_form_update = cursor.execute(f"""
-            SELECT timestamp FROM latestFormUpdate 
-            WHERE cik={int(cik)}
-            """).fetchone()
-        
-        latest_form_update = latest_form_update[0] if latest_form_update is not None else 0.0
+    cursor = connection.cursor()
+    # create relevant table.
+    cursor.execute("CREATE TABLE IF NOT EXISTS " + schema.latestFormUpdate)
+    cursor.execute("CREATE TABLE IF NOT EXISTS " + schema.submissionForm)
+    
+    if max_days_old == 0:
+        perform_load(connection=connection, cik=cik)
+        return
+    
+    latest_form_update = cursor.execute(f"""
+        SELECT timestamp FROM latestFormUpdate 
+        WHERE cik={int(cik)}
+        """).fetchone()
+    
+    latest_form_update = latest_form_update[0] if latest_form_update is not None else 0.0
 
-        delta_days = (datetime.today().timestamp() - latest_form_update)/86400
+    delta_days = (datetime.today().timestamp() - latest_form_update)/86400
 
     if delta_days > max_days_old:
         perform_load(connection=connection, cik=cik)
@@ -161,7 +164,7 @@ def submissions_form_load_all(connection, max_days_old:int=0):
         return 
     
     for cik in tqdm(ciks, desc="getting submission form."):
-        submissions_form_load(connection=connection, cik=cik, max_days_old=max_days_old, commit_database=False)
+        submissions_form_load(connection=connection, cik=cik, max_days_old=max_days_old, do_commit=True)
         
     connection.commit()
         

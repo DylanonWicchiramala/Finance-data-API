@@ -10,7 +10,7 @@ companyInfo = """companyInfo(
 latestFormUpdate="""latestFormUpdate(
   cik INT(10) PRIMARY KEY NOT NULL,
   timestamp FLOAT
-"""
+)"""
 
 submissionForm = """submissionForm(
   accession_number INT(15) PRIMARY KEY NOT NULL,
