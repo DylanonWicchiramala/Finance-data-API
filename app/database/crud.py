@@ -6,6 +6,7 @@ sys.path.append('./database')
 from tqdm import tqdm
 import schema
 from get_data import scrape_companies_info, scrape_submission_form
+from datetime import datetime
 import logging
 logger = logging.getLogger(__name__)
 
@@ -94,36 +95,56 @@ def company_info_get(connection, filter:dict, columns:list=None, get_first:bool=
 
     else: return [ dict(zip(columns, r)) for r in res ]
     
-    
-def submissions_form_load(connection, cik:int|str, force=False):
-    submissions_form = scrape_submission_form.get_submissions_form(cik)
-    
-    # if not have submission form.
-    if len(submissions_form)==0:
-        logger.info("No submissions from of CIK{}".format(cik))
-        return
 
-    keys = list(submissions_form[0].keys())
-    values = [ list(d.values()) for d in submissions_form]
+def submissions_form_load(connection, cik:int|str, max_days_old:int=0, commit_database:bool=True):
+    # data will not update when the number of the days since data was update less than max_day_old.
+    def perform_load(connection, cik:int|str):
+        submissions_form = scrape_submission_form.get_submissions_form(cik)
+        
+        # if not have submission form.
+        if len(submissions_form)==0:
+            logger.info("No submissions from of CIK{}".format(cik))
+            return
 
-    cursor = connection.cursor()
+        keys = list(submissions_form[0].keys())
+        values = [ list(d.values()) for d in submissions_form]
 
-    if force: cursor.execute("DROP TABLE IF EXISTS submissionForm")
-    cursor.execute("CREATE TABLE IF NOT EXISTS " + schema.submissionForm)
-    cursor.executemany(
-        f"""
-        INSERT OR REPLACE INTO submissionForm ({",".join(keys)})
-        VALUES ({",".join("?"*len(keys))})
-        """, 
-        values
-        )
+        cursor = connection.cursor()
+        
+        cursor.execute("CREATE TABLE IF NOT EXISTS " + schema.latestFormUpdate)
+        cursor.execute("CREATE TABLE IF NOT EXISTS " + schema.submissionForm)
+        cursor.executemany(
+            f"""
+            INSERT OR REPLACE INTO submissionForm ({",".join(keys)})
+            VALUES ({",".join("?"*len(keys))})
+            """, 
+            values
+            )
+        cursor.execute(f"""
+            INSERT OR REPLACE INTO latestFormUpdate (cik, timestamp)
+            VALUES ({cik},{datetime.today().timestamp()})
+            """)
 
-    logger.info("Submissions from of CIK{} was loaded into a database.".format(cik))
-    connection.commit()
+        logger.info("Submissions from of CIK{} was loaded into a database.".format(cik))
+        if commit_database: connection.commit()
+    
+    if max_days_old != 0:
+        cursor = connection.cursor()
+        
+        latest_form_update = cursor.execute(f"""
+            SELECT timestamp FROM latestFormUpdate 
+            WHERE cik={int(cik)}
+            """).fetchone()
+        
+        latest_form_update = latest_form_update[0] if latest_form_update is not None else 0.0
+
+        delta_days = (datetime.today().timestamp() - latest_form_update)/86400
+
+    if delta_days > max_days_old:
+        perform_load(connection=connection, cik=cik)
     
     
-# TODO: continue getting submissions form
-def submissions_form_load_all(connection, force=False):
+def submissions_form_load_all(connection, max_days_old:int=0):
     cursor = connection.cursor()
     ciks = cursor.execute("""
     SELECT cik FROM companyInfo
@@ -132,4 +153,16 @@ def submissions_form_load_all(connection, force=False):
     ciks = set(ciks)
     
     for cik in tqdm(ciks, desc="getting submission form."):
-        submissions_form_load(connection=connection, cik=cik, force=force)
+        submissions_form_load(connection=connection, cik=cik, max_days_old=max_days_old, commit_database=False)
+        
+    connection.commit()
+        
+
+def submissions_form_drop(connection):
+    cursor = connection.cursor()
+    cursor.execute("""
+        DROP TABLE submissionForm, latestFormUpdate
+        """)
+    
+    connection.commit()
+    
