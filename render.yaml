@@ -13,7 +13,7 @@ services:
     region: singapore
     envVars:
       - key: DATA_PATH
-        value: /var/lib/data
+        value: var/lib/data
     # envVars:
     #   - fromGroup: main-env
     # envVarGroups:
