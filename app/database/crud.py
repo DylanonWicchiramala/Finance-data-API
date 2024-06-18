@@ -148,6 +148,8 @@ def submissions_form_load(connection, cik:int|str, max_days_old:int=0, do_commit
 
     if delta_days > max_days_old:
         perform_load(connection=connection, cik=cik)
+    else:
+        logger.info(f"Submission form information of {cik} was already loaded {delta_days} days ago.")
     
     
 def submissions_form_load_all(connection, max_days_old:int=0):
