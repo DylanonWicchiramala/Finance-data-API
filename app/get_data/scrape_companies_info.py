@@ -2,7 +2,6 @@ import sys
 sys.path.append('./get_data')
 
 from typing import Any
-import json
 from util import request_get
 import logging
 logger = logging.getLogger(__name__)
