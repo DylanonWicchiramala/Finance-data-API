@@ -179,3 +179,8 @@ def submissions_form_drop(connection):
     
     connection.commit()
     
+
+#TODO: submissions_form_get
+def submissions_form_get(connection, cik, filing_date_from, filing_date_to):
+    pass
+    
