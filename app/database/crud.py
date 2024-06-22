@@ -48,7 +48,8 @@ def __tablefilter(cursor, table_name:str, filter:dict, columns:list=None, c="AND
             FROM {table_name} 
             """ + condition
             )
-    return res
+    columns = [ col[0] for col in res.description]
+    return res, columns
 
 
 def __tableinsertmany(cursor, items:list[dict[str, Any]], schema:str, primary_key_column:str=None, update_on_conflit=False, force:bool=False):
@@ -153,7 +154,7 @@ def company_info_get(connection, filter:dict, columns:list=None, get_first:bool=
     :return: Dictionary containing company info (return list if have many result) if found, otherwise None
     """
     cursor = connection.cursor()
-    res = __tablefilter(cursor, "companyInfo", filter, columns)
+    res, columns = __tablefilter(cursor, "companyInfo", filter, columns)
     res = res.fetchone() if get_first else res.fetchall()
     
     if get_first: 
@@ -197,7 +198,7 @@ def submissions_form_load(connection, cik:int|str, max_days_old:int=0, do_commit
         perform_load(connection=connection, cik=cik)
         return
     
-    latest_form_update = __tablefilter(cursor=cursor, table_name='latestFormUpdate', filter={'cik':int(cik)}, columns=['timestamp'], c="AND")
+    latest_form_update, _ = __tablefilter(cursor=cursor, table_name='latestFormUpdate', filter={'cik':int(cik)}, columns=['timestamp'], c="AND")
     latest_form_update = latest_form_update.fetchone()
     latest_form_update = latest_form_update[0] if latest_form_update is not None else 0.0
 

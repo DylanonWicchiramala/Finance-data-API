@@ -29,10 +29,10 @@ def read_root():
 async def read_post(ticker: str=None, cik: str=None, connection: db_dependency=None):
     if ticker is not None:
         ticker = ticker.upper()
-        post = crud.company_info_get(connection=connection, filter={'ticker':ticker}, columns=['cik', 'ticker', 'name'], get_first=True)
+        post = crud.company_info_get(connection=connection, filter={'ticker':ticker}, columns=None, get_first=True)
     elif cik is not None:
         cik = int(cik)
-        post = crud.company_info_get(connection=connection, filter={'cik':cik}, columns=['cik', 'ticker', 'name'    ], get_first=False)
+        post = crud.company_info_get(connection=connection, filter={'cik':cik}, columns=None, get_first=False)
     else:
         return None
     if post is None or len(post) == 0:
