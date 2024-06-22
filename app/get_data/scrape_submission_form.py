@@ -62,7 +62,26 @@ def get_submissions_form(
     
     logger.info("Getting submission info of CIK{}".format(cik))
     
-    filings = __get_submission_meta(cik=cik)['filings']
+    metas = __get_submission_meta(cik=cik)
+    filings = metas['filings']
+    exchanges = metas['exchanges']
+    try:
+        exchanges = "/".join(exchanges) if isinstance(exchanges, list) else exchanges
+    except TypeError:
+        exchanges = ""
+    company_info = {
+        'cik': metas['cik'],
+        'entity_type': metas['entityType'],
+        'sic': metas['sic'],
+        'industry': metas['sicDescription'],
+        'exchanges': exchanges,
+        'description': metas['description'],
+        'website': metas['website'],
+        'category': metas['category'],
+        'investor_website': metas['investorWebsite'],
+        'fiscal_year_end': metas['fiscalYearEnd'],
+        'state_of_incorporation': metas['stateOfIncorporation']
+    }
     submissions = {}
 
     # get the recent submission files.
@@ -97,4 +116,4 @@ def get_submissions_form(
     submissions = convert_to_list_dict(submissions)
     submissions = submissions_form_transform(submissions)
     
-    return submissions
+    return submissions, company_info

@@ -1,11 +1,21 @@
 companyInfo = """companyInfo(
   cik INT(10) NOT NULL,
-  cik_str STRING(10) NOT NULL,
   ticker STRING PRIMARY KEY NOT NULL,
-  name STRING ,
-  secter STRING ,
-  industry STRING
-)"""
+  name STRING,
+  entity_type STRING,
+  sic INT,
+  industry STRING,
+  exchanges STRING,
+  description STRING,
+  website STRING,
+  category STRING,
+  investor_website STRING,
+  fiscal_year_end STRING,
+  state_of_incorporation STRING
+  ) 
+"""
+
+
 
 latestFormUpdate="""latestFormUpdate(
   cik INT(10) PRIMARY KEY NOT NULL,
