@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+app/data/financedata.db
+
 # C extensions
 *.so
 

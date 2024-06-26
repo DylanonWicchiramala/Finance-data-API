@@ -11,7 +11,7 @@ from datetime import datetime
 import logging
 logger = logging.getLogger(__name__)
 
-def __tablefilter(cursor, table_name:str, filter:dict, columns:list=None, c="AND"):
+def __tablefilter(cursor, table_name:str, filter:dict, columns:list=None, condition="AND"):
     """
     Search data in table  by filter and return the result as sql3 cursor.
     
@@ -20,19 +20,22 @@ def __tablefilter(cursor, table_name:str, filter:dict, columns:list=None, c="AND
         table_name: name of table to search
         filter: The filter (in dict) to search for
         columns: List of columns to return (default is all columns)
-        c: condition AND, OR
+        condition: condition AND, OR
     :return: Dictionary containing company info (return list if have many result) if found, otherwise None
     """
     
     filter = list(filter.items())
     condition = []
-    for q, v in filter:
-        if hasattr(v, '__iter__') and not isinstance(v, str):
-            condition.append(f"{q} IN {str(tuple(v))}")
-        else:
-            condition.append("{} = '{}'".format(q, v))
+    if filter is not None or len(filter) != 0:
+        for q, v in filter:
+            if v is not None:
+                if hasattr(v, '__iter__') and not isinstance(v, str) and len(v) > 1:
+                    condition.append(f"{q} IN {str(tuple(v))}")
+                else:
+                    v = v if isinstance(v, str) else v[0]
+                    condition.append("{} = \"{}\"".format(q, v))
             
-    condition = " WHERE " + f" {c} ".join(condition)    
+    condition = " WHERE " + f" {condition} ".join(condition)    
 
     if columns is None:
         res = cursor.execute(
@@ -131,8 +134,8 @@ def __tableupdate(cursor, item: dict[str, Any], schema: str, key_column: str):
         """, update_values + [key_value])
     
 
-def company_info_load(connection, force=False):
-    ciks = scrape_companies_info.get_ciks()
+def company_info_load(connection, from_cache_file=True, force=False):
+    ciks = scrape_companies_info.get_ciks(use_cache_file=from_cache_file)
 
     cursor = connection.cursor()
 
@@ -142,28 +145,22 @@ def company_info_load(connection, force=False):
     logger.info("companyInfo database loaded")
     
 
-def company_info_get(connection, filter:dict, columns:list=None, get_first:bool=True):
+def company_info_get(connection, filter:dict, columns:list=None, item_limit:int=1000) -> list[dict]:
     """
     Search for company info by filter and return the result as a dictionary.
     
     :param:
-        session: SQLAlchemy session object
+        connection: sqlite connection object
         filter: The filter (in dict) to search for
         columns: List of columns to return (default is all columns)
-        get_first: If True, return only first object
+        items_limit: The maximum number of output items to return.
     :return: Dictionary containing company info (return list if have many result) if found, otherwise None
     """
     cursor = connection.cursor()
     res, columns = __tablefilter(cursor, "companyInfo", filter, columns)
-    res = res.fetchone() if get_first else res.fetchall()
+    res = res.fetchmany(item_limit)
     
-    if get_first: 
-        if res is not None:
-            return dict(zip(columns, res))
-        else:
-            return None
-
-    else: return [ dict(zip(columns, r)) for r in res ]
+    return [ dict(zip(columns, r)) for r in res ]
     
 
 def submissions_form_load(connection, cik:int|str, max_days_old:int=0, do_commit:bool=True):
@@ -198,7 +195,7 @@ def submissions_form_load(connection, cik:int|str, max_days_old:int=0, do_commit
         perform_load(connection=connection, cik=cik)
         return
     
-    latest_form_update, _ = __tablefilter(cursor=cursor, table_name='latestFormUpdate', filter={'cik':int(cik)}, columns=['timestamp'], c="AND")
+    latest_form_update, _ = __tablefilter(cursor=cursor, table_name='latestFormUpdate', filter={'cik':int(cik)}, columns=['timestamp'], condition="AND")
     latest_form_update = latest_form_update.fetchone()
     latest_form_update = latest_form_update[0] if latest_form_update is not None else 0.0
 
@@ -210,31 +207,73 @@ def submissions_form_load(connection, cik:int|str, max_days_old:int=0, do_commit
         logger.info(f"Submission form information of {cik} was already loaded {delta_days} days ago.")
     
     
-def submissions_form_load_many(connection, ciks:list[int|str], max_days_old:int=0):
-    ciks = set(ciks)
+def submissions_form_load_many(connection, ciks:list[int|str], n_batch_commits:int=1, max_days_old:int=0):
+    def __get_outdated_cik(connection, ciks:list=None, max_days_old:int=0):
+        now_timestamp = datetime.now().timestamp()
+        diff_seconds = max_days_old * 24 * 60 * 60
+
+        diff_timestamp = now_timestamp - diff_seconds
+
+        ciks_str = ', '.join(map(str, ciks))
+
+        # Execute the SQL query
+        query = f"""
+            SELECT companyInfo.cik 
+            FROM companyInfo LEFT JOIN LatestFormUpdate 
+            ON companyInfo.cik = latestFormUpdate.cik 
+            WHERE latestFormUpdate.timestamp < {str(diff_timestamp)} OR latestFormUpdate.cik IS NULL
+        """
+        if ciks is not None:
+            query = query + f" AND companyInfo.cik IN ({ciks_str})"
+        cursor = connection.cursor()
+        ciks = cursor.execute(query).fetchall()
+        connection.commit()
+        return [cik[0] for cik in ciks]
     
-    for cik in tqdm(ciks, desc="getting submission form."):
-        submissions_form_load(connection=connection, cik=cik, max_days_old=max_days_old, do_commit=False)
+    # remove duplicates of values
+    ciks = list(dict.fromkeys(ciks))
+    
+    ciks = __get_outdated_cik(connection=connection, ciks=ciks, max_days_old=max_days_old)
+    
+    for i in tqdm(range(len(ciks)), desc="getting submission form."):
+        submissions_form_load(connection=connection, cik=ciks[i], max_days_old=0, do_commit=False)
+        if i % n_batch_commits == n_batch_commits-1:
+            connection.commit()
         
     connection.commit()
     
     
-def submissions_form_load_all(connection, max_days_old:int=0):
+def submissions_form_load_all(connection, n_batch_commits:int=1, max_days_old:int=0):
     cursor = connection.cursor()
     # getting cik from company info
     ciks = cursor.execute("""
     SELECT cik FROM companyInfo
-    WHERE entity_type = "operating" OR entity_type = "" OR entity_type IS NULL
     """).fetchall()
     ciks = [cik[0] for cik in ciks]
-    ciks = set(ciks)
     
     if len(ciks)==0:
         logger.warning("Submissions form not load any, due to no data in companyInfo")
         return 
     
-    for cik in tqdm(ciks, desc="getting submission form."):
-        submissions_form_load(connection=connection, cik=cik, max_days_old=max_days_old, do_commit=True)
+    submissions_form_load_many(connection=connection, ciks=ciks, n_batch_commits=n_batch_commits, max_days_old=max_days_old)
+    
+    connection.commit()
+    
+
+def submissions_form_load_random(connection, n_rand:int=500, n_batch_commits:int=1, max_days_old:int=0):
+    cursor = connection.cursor()
+    # getting cik from company info
+    ciks = cursor.execute(f"""
+    SELECT cik FROM companyInfo
+    ORDER BY RANDOM() LIMIT {str(n_rand)}
+    """).fetchall()
+    ciks = [cik[0] for cik in ciks]
+    
+    if len(ciks)==0:
+        logger.warning("Submissions form not load any, due to no data in companyInfo")
+        return 
+
+    submissions_form_load_many(connection=connection, ciks=ciks, n_batch_commits=n_batch_commits, max_days_old=max_days_old)
         
     connection.commit()
         
@@ -247,7 +286,67 @@ def submissions_form_drop(connection):
     connection.commit()
     
 
-#TODO: submissions_form_get
-def submissions_form_get(connection, cik, filing_date_from, filing_date_to):
-    pass
+def submissions_form_get(connection, filter:dict, columns:list=None, date_from:str=None, date_to:str=None, item_limit:int=1000) -> list[dict]:
+    """
+    Search for company filing by filter and return the result as a list of dictionary.
     
+    :param:
+        connection: sqlite connection object
+        filter: The filter (in dict) to search for
+        columns: List of columns to return (default is all columns)
+        date_from: filter date from 
+        date_to: filterr date to
+    :return: Dictionary containing company info (return list if have many result) if found, otherwise None
+    """
+    cursor = connection.cursor()
+    
+    filter = {} if filter is None else list(filter.items())
+    
+    condition = []
+    if filter is not None or len(filter) != 0:
+        for q, v in filter:
+            if v is not None:
+                if hasattr(v, '__iter__') and not isinstance(v, str) and len(v) > 1:
+                    condition.append(f"{q} IN {str(tuple(v))}")
+                else:
+                    v = v if isinstance(v, str) else v[0]
+                    condition.append("{} = \"{}\"".format(q, v))
+                
+        condition = f" AND ".join(condition)    
+    
+        
+    date_from = datetime.strftime(datetime.strptime(date_from, "%Y-%m-%d"), "%Y-%m-%d") if date_from is not None else None
+    date_to = datetime.strftime(datetime.strptime(date_to, "%Y-%m-%d"), "%Y-%m-%d") if date_to is not None else None
+    
+    if date_from is not None:
+        datefrom_cont = f"date(filing_date) > date(\"{date_from}\")"
+        condition = condition + f" AND {datefrom_cont}" if len(condition) > 0 else datefrom_cont
+    if date_to is not None:
+        dateto_cont = f"date(filing_date) < date(\"{date_to}\")"
+        condition = condition + f" AND {dateto_cont}" if len(condition) > 0 else dateto_cont
+        
+    if len(condition) == 0:
+        condition = "TRUE"
+
+    column = """
+        ticker, companyInfo.cik, primary_doc_description, primary_docment,
+        accession_number, filing_date, report_date, acceptance_date_time, 
+        index_url, primary_docment_url, act, form
+        """ if columns is None else ','.join(columns)
+    
+    query = f"""
+        SELECT {column}
+        FROM submissionForm INNER JOIN companyInfo ON submissionForm.cik = companyInfo.cik
+        WHERE {condition}
+        """
+    
+    q_res = cursor.execute(query)
+    data = q_res.fetchmany(item_limit)
+    
+    columns = [ col[0] for col in q_res.description]
+    
+    if len(data) == 0:
+        return None
+    
+    datadict = [ dict(zip(columns, r)) for r in data ]
+    return datadict

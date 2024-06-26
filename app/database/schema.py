@@ -15,8 +15,6 @@ companyInfo = """companyInfo(
   ) 
 """
 
-
-
 latestFormUpdate="""latestFormUpdate(
   cik INT(10) PRIMARY KEY NOT NULL,
   timestamp FLOAT
@@ -28,6 +26,8 @@ submissionForm = """submissionForm(
   filing_date DATE,
   report_date DATE,
   acceptance_date_time DATETIME,
+  index_url STRING,
+  primary_docment_url STRING,
   act STRING,
   form STRING,
   file_number STRING,
@@ -40,68 +40,54 @@ submissionForm = """submissionForm(
   primary_doc_description STRING
 )"""
 
-# enum numberScale {
-#   million
-#   billion
-#   trillion
-# }
+# # from CONDENSED CONSOLIDATED STATEMENTS OF INCOME R2.htm
+# financialStatement = """financialStatement(
+#   accession_number INT(15) PRIMARY KEY NOT NULL,
+#   revenue float,
+#   gross_profit float,
+#   operating_income float,
+#   net_income float,
+#   cost_of_revenue float,
+#   operating_expenses float,
+#   non_operating_income float,
+#   shares_outstanding INT,
+#   shares_outstanding_diluted INT,
+#   money_scale STRING,
+#   shares_outstanding_scale STRING
+# )"""
 
-# enum currency{
-#   usd
-#   thb
-# }
+# # from CONDENSED CONSOLIDATED BALANCE SHEETS R4.htm or R5.htm
+# balanceSheets ="""balanceSheets(
+#   accession_number INT(15) PRIMARY KEY NOT NULL,
+#   total_assets float,
+#   total_liabilities float,
+#   shareholder_equity float,
+#   cash_and_cash_equivalents float,
+#   money_scale STRING
+# )"""
 
-# Table financialStatement{
-#   accession_number INT(15) [pk]
-#   ticker STRING(10)
-
-#   revenue float
-#   gross_profit float
-#   operating_income float
-#   net_income float
-#   cost_of_revenue float
-#   operating_expenses float
-#   non_operating_expenses float
-
-#   shares_outstanding INT
-#   shares_outstanding_diluted INT
+# # from CONDENSED CONSOLIDATED STATEMENTS OF CASH FLOWS R7.htm
+# cashFlows = """cashFlows(
+#   accession_number INT(15) PRIMARY KEY NOT NULL,
+#   cash_from_operating_activities float,
+#   cash_from_financing_activities float,
+#   cash_from_investing_activities float,
+#   free_cash_flow float,
 #   money_scale numberScale
-#   shares_outstanding_scale numberScale
-# }
+# )"""
 
-# Table balanceSheets{
-#   accession_number INT(15) [pk]
-#   ticker STRING(10)
-
-#   total_assets float
-#   total_liabilities float
-#   shareholder_equity float
-#   cash_and_cash_equivalents float
-#   money_scale numberScale
-# }
-
-# Table cashFlows{
-#   accession_number INT(15) [pk]
-#   ticker STRING(10)
-
-#   cash_from_operating_activities float
-#   cash_from_financing_activities float
-#   cash_from_investing_activities float
-#   free_cash_flow float
-#   money_scale numberScale
-# }
-
-# Table financialRatio{
-#   accession_number INT(15) [pk]
-#   ticker STRING(10)
-
-#   EPS float
-#   EPS_diluted float
-#   sales_per_share float
-#   sales_per_share_diluted float
-#   ROA float
-#   ROE float
-#   gross_margin float
-#   operating_margin float
+# # from CONDENSED CONSOLIDATED STATEMENTS OF INCOME R2.htm
+# financialRatio = """financialRatio(
+#   accession_number INT(15) PRIMARY KEY NOT NULL,
+#   earnings_per_share float,
+#   earnings_per_share_diluted float,
+#   sales_per_share float,
+#   sales_per_share_diluted float,
+#   price_to_earnings float,
+#   price_to_sales float,
+#   return_on_assets float,
+#   return_on_equity float,
+#   gross_margin float,
+#   operating_margin float,
 #   net_margin float
-# }
+# )"""
