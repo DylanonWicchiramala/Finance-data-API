@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, status, Query
+from typing import List
 from fastapi.responses import RedirectResponse
 from typing import Annotated
 from database import crud, data
@@ -25,38 +26,64 @@ def read_root():
 
 
 ## company_info
-@app.get("/company-info/", status_code=status.HTTP_200_OK)
-async def read_post(ticker: str=None, cik: str=None, connection: db_dependency=None):
-    if ticker is not None:
-        ticker = ticker.upper()
-        post = crud.company_info_get(connection=connection, filter={'ticker':ticker}, columns=None, get_first=True)
-    elif cik is not None:
-        cik = int(cik)
-        post = crud.company_info_get(connection=connection, filter={'cik':cik}, columns=None, get_first=False)
+@app.get("/company-info/{cik_or_ticker}", status_code=status.HTTP_200_OK)
+async def company_info_get_by_cik(cik_or_ticker:int|str, connection: db_dependency=None):
+    item_limit = 100
+    
+    if cik_or_ticker.isnumeric():
+        cik = int(cik_or_ticker)
+        post = crud.company_info_get(connection=connection, filter={'cik':cik}, columns=None, item_limit=item_limit)
     else:
-        return None
+        ticker = cik_or_ticker.upper()
+        post = crud.company_info_get(connection=connection, filter={'ticker':ticker}, columns=None, item_limit=item_limit)    
+    
     if post is None or len(post) == 0:
         raise HTTPException(status_code=404, detail="ticker or cik is not found.")
-    # data.connection.close()
     return post
 
 
-# @app.get("/company-info/convert-ticker/{ticker}", status_code=status.HTTP_200_OK)
-# async def read_post(ticker: str, session: db_dependency=None):
-#     ticker = ticker.upper()
-#     post = crud.company_info_get(session=session, filter={'ticker':ticker}, columns=['cik','cik_str','ticker','name'], get_first=True)
-#     if post is None:
-#         raise HTTPException(status_code=404, detail="company ticker is not found.")
-#     return post
-
-
-# @app.get("/company-info/convert-cik/{cik}", status_code=status.HTTP_200_OK)
-# async def read_post(cik: str, session: db_dependency=None):
-#     cik = int(cik)
-#     post = crud.company_info_get(session=session, filter={'cik':cik}, columns=['cik','cik_str','ticker','name'], get_first=False)
-#     if post is None:
-#         raise HTTPException(status_code=404, detail="company cik is not found.")
-#     return post
+## submission form
+@app.get("/filing/", status_code=status.HTTP_200_OK)
+async def submissions_form_get(
+    ticker:str|List[str]=Query(None),
+    cik:str|List[str]=Query(None),
+    accession_number:str|List[str]=Query(None),
+    act:str|List[str]=Query(None),
+    form:str|List[str]=Query(None),
+    date_form:str=None, 
+    date_to:str=None, 
+    limit:int=1000, 
+    connection:db_dependency=None
+    ):
+    if isinstance(ticker, str):
+        ticker = ticker.upper()
+    elif isinstance(ticker, list):
+        ticker = [ t.upper() for t in ticker ]
+    if isinstance(cik, int) or isinstance(cik, str):
+        cik = int(cik)
+    elif isinstance(cik, list):
+        cik = [int(c) for c in cik]
+    if isinstance(form, str):
+        form = form.upper()
+    elif isinstance(form, list):
+        form = [ f.upper() for f in form ]
+    post = crud.submissions_form_get(
+        connection, 
+        filter={
+            "ticker": ticker,
+            "cik": cik,
+            "accession_number": accession_number,
+            "act": act,
+            "form": form,   
+        }, 
+        columns=None, 
+        date_from=date_form, 
+        date_to=date_to, 
+        item_limit=limit
+        )
+    if post is None or len(post) == 0:
+        raise HTTPException(status_code=404, detail="data is not found.")
+    return post
 
 
 @app.get("/super-secret-easter-egg/", status_code=status.HTTP_200_OK)
@@ -71,33 +98,3 @@ async def ping():
 
 
 
-# @app.post("/posts/", status_code=status.HTTP_201_CREATED)
-# async def create_post(post: PostBase, session: db_dependency):
-#     db_post = models.Post(**post.model_dump())
-#     session.add(db_post)
-#     session.commit()
-
-
-# @app.delete("/posts/{post_id}", status_code=status.HTTP_200_OK)
-# async def delete_post(post_id: int, db: db_dependency):
-#     db_post = db.query(models.Post).filter(models.Post.id == post_id).first()
-#     if db_post is None:
-#         raise HTTPException(status_code=404, detail="post not found")
-#     db.delete(db_post)
-#     db.commit()
-        
-
-# @app.post("/users/", status_code=status.HTTP_201_CREATED)
-# async def create_user(user: UserBase, db: db_dependency):
-#     # db_user = models.User(**user.dict())
-#     db_user = models.User(**user.model_dump())
-#     db.add(db_user)
-#     db.commit()
-    
-
-# @app.get("/users/{user_id}", status_code=status.HTTP_200_OK)
-# async def read_user(user_id: int, db: db_dependency):
-#     user = db.query(models.User).filter(models.User.id == user_id).first()
-#     if user is None:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     return user
