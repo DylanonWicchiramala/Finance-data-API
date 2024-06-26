@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 
 app/data/financedata.db
+app\data\financedata.db
 
 # C extensions
 *.so
