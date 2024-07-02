@@ -52,7 +52,7 @@ async def submissions_form_get(
     form:str|List[str]=Query(None),
     date_form:str=None, 
     date_to:str=None, 
-    limit:int=1000, 
+    limit:int=100, 
     connection:db_dependency=None
     ):
     if isinstance(ticker, str):
