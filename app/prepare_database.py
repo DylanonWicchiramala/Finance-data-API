@@ -9,8 +9,8 @@ exceptions = []
     
 crud.company_info_load(data.connection, from_cache_file=True, force=False)
 
-crud.submissions_form_load_all(data.connection, n_batch_commits=8, max_days_old=7)
-crud.submissions_form_load_random(data.connection, n_rand=500, n_batch_commits=8, max_days_old=2)
+crud.submissions_form_load_random(data.connection, n_rand=1000, n_batch_commits=8, max_days_old=2)
+# crud.submissions_form_load_all(data.connection, n_batch_commits=8, max_days_old=7)
 
 # ciks = [
 #     789019,
