@@ -3,7 +3,7 @@ import sqlite3
 import logging
 logger = logging.getLogger(__name__)
 
-PATH = os.environ.get("DATA_PATH", "var/lib/data")
+PATH = os.environ.get("DATA_PATH", "/var/lib/data")
 # PATH = os.environ.get("DATA_PATH", "./data")
 logger.warning("Data path location: {}".format(PATH))
 
