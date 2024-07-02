@@ -266,7 +266,7 @@ def submissions_form_load_random(connection, n_rand:int=500, n_batch_commits:int
     ciks = cursor.execute(f"""
     SELECT cik FROM companyInfo
     ORDER BY RANDOM() LIMIT {str(n_rand)}
-    """).fetchall()
+    """).fetchmany(n_rand)
     ciks = [cik[0] for cik in ciks]
     
     if len(ciks)==0:
