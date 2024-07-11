@@ -71,7 +71,7 @@ async def submissions_form_get(
         connection, 
         filter={
             "ticker": ticker,
-            "cik": cik,
+            "submissionForm.cik": cik,  # HOT FIX
             "accession_number": accession_number,
             "act": act,
             "form": form,   
