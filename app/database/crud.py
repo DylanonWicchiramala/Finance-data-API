@@ -57,7 +57,7 @@ def __tablefilter(cursor, table_name:str, filter:dict, columns:list=None, condit
 
 def __tableinsertmany(cursor, items:list[dict[str, Any]], schema:str, primary_key_column:str=None, update_on_conflit=False, force:bool=False):
     """
-    Insert (or update) a new rows into the sqlite database.
+    Insert (or update if on conflit) a new rows into the sqlite database.
     
     :param:
         cursor: sqlite cursor object.
@@ -102,7 +102,7 @@ def __tableinsertmany(cursor, items:list[dict[str, Any]], schema:str, primary_ke
 
 def __tableinsert(cursor, item:dict[str, Any], schema:str, primary_key_column:str=None, update_on_conflit=False, force:bool=False):
     """
-    Insert (or update) a single row into the sqlite database.
+    Insert (or update if on conflit) a single row into the sqlite database.
     
     :param:
         cursor: sqlite cursor object.
