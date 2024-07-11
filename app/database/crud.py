@@ -56,6 +56,18 @@ def __tablefilter(cursor, table_name:str, filter:dict, columns:list=None, condit
 
 
 def __tableinsertmany(cursor, items:list[dict[str, Any]], schema:str, primary_key_column:str=None, update_on_conflit=False, force:bool=False):
+    """
+    Insert (or update) a new rows into the sqlite database.
+    
+    :param:
+        cursor: sqlite cursor object.
+        items: new rows of data to insert into the sqlite database, In format list of dictionary like this list[ dict[column_names, values] ].
+        schema: schema string of the data base, such as "TableName(id INT(15) PRIMARY KEY, name STRING)"
+        primary_key_column: The name of the column that are primary keys. (The function will use this column to deal with data conflicts.)
+        update_on_conflit: Boolean, new data will be updated to the old one if found the conflictation, if True, Otherwise they will be replaced the old one.
+        force: boolean, Drop the talbe(if exists) before inserting new rows(items), if True.
+    :return: None
+    """
     keys = list(items[0].keys())
     items = [ list(d.values()) for d in items]
     
@@ -89,6 +101,18 @@ def __tableinsertmany(cursor, items:list[dict[str, Any]], schema:str, primary_ke
     
 
 def __tableinsert(cursor, item:dict[str, Any], schema:str, primary_key_column:str=None, update_on_conflit=False, force:bool=False):
+    """
+    Insert (or update) a single row into the sqlite database.
+    
+    :param:
+        cursor: sqlite cursor object.
+        items: new row of data to insert into the sqlite database, dict[column_names, values]
+        schema: schema string of the data base, such as "TableName(id INT(15) PRIMARY KEY, name STRING)"
+        primary_key_column: The name of the column that are primary keys. (The function will use this column to deal with data conflicts.)
+        update_on_conflit: Boolean, new data will be updated to the old one if found the conflictation, if True, Otherwise they will be replaced the old one.
+        force: boolean, Drop the talbe(if exists) before inserting new rows(items), if True.
+    :return: None
+    """
     keys = list(item.keys())
     values = list(item.values())
     
@@ -116,6 +140,16 @@ def __tableinsert(cursor, item:dict[str, Any], schema:str, primary_key_column:st
     
     
 def __tableupdate(cursor, item: dict[str, Any], schema: str, key_column: str):
+    """
+    Update a single row into the sqlite database. use this function if key_column are not primary_key.
+    
+    :param:
+        cursor: sqlite cursor object.
+        items: new row of data to update into the sqlite database, dict[column_names, values]
+        schema: schema string of the data base, such as "TableName(id INT(15) PRIMARY KEY, name STRING)"
+        key_column: The name of the column that are keys. (The function will use this column to deal with data conflicts.)
+    :return: None
+    """
     keys = list(item.keys())
     values = list(item.values())
     
@@ -135,6 +169,9 @@ def __tableupdate(cursor, item: dict[str, Any], schema: str, key_column: str):
     
 
 def company_info_load(connection, from_cache_file=True, force=False):
+    """
+    
+    """
     ciks = scrape_companies_info.get_ciks(use_cache_file=from_cache_file)
 
     cursor = connection.cursor()
