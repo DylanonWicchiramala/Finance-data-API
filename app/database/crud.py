@@ -32,7 +32,7 @@ def __tablefilter(cursor, table_name:str, filter:dict, columns:list=None, condit
                 if hasattr(v, '__iter__') and not isinstance(v, str) and len(v) > 1:
                     condition.append(f"{q} IN {str(tuple(v))}")
                 else:
-                    v = v if isinstance(v, str) else v[0]
+                    v = v[0] if isinstance(v, list) else v
                     condition.append("{} = \"{}\"".format(q, v))
             
     condition = " WHERE " + f" {condition} ".join(condition)    
@@ -309,7 +309,7 @@ def submissions_form_get(connection, filter:dict, columns:list=None, date_from:s
                 if hasattr(v, '__iter__') and not isinstance(v, str) and len(v) > 1:
                     condition.append(f"{q} IN {str(tuple(v))}")
                 else:
-                    v = v if isinstance(v, str) else v[0]
+                    v = v[0] if isinstance(v, list) else v
                     condition.append("{} = \"{}\"".format(q, v))
                 
         condition = f" AND ".join(condition)    
